@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIIA Clinical Trials Dashboard 🏥 Ayurveda CTMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== AUTH VIEW ===================== -->
+<div id="authView" class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-seal">?</div>
+    <h1 class="auth-title">AIIA Clinical Trials Dashboard</h1>
+    <p class="auth-sub">GCP-compliant CTMS &amp; Pharmacovigilance for Ayurveda Research</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Log in</button>
+      <button class="auth-tab" data-tab="signup">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-form">
+      <label>Username
+        <input type="text" id="loginUsername" required autocomplete="username" placeholder="e.g. admin or pi_vaidya">
+      </label>
+      <label>Password
+        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="��������">
+      </label>
+      <button type="submit" class="btn-primary" style="justify-content:center; margin-top:8px;">Log in to CTMS</button>
+      <p class="auth-error" id="loginError"></p>
+
+      <div class="demo-credentials-box">
+        <p class="demo-title">Demo Credentials (Password: <code>admin123</code> for all)</p>
+        <div class="demo-grid">
+          <div><code>admin</code> (Admin)</div>
+          <div><code>pi_vaidya</code> (Principal Investigator)</div>
+          <div><code>crc_priya</code> (Clinical Coordinator)</div>
+          <div><code>datamgr_arun</code> (Data Manager)</div>
+          <div><code>ethics_drsharma</code> (Ethics Member)</div>
+          <div><code>reg_anita</code> (Regulatory Officer)</div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Registration Form -->
+    <form id="signupForm" class="auth-form hidden">
+      <label>Full Name
+        <input type="text" id="signupName" required placeholder="e.g. Dr. Ramesh Gupta">
+      </label>
+      <label>Username
+        <input type="text" id="signupUsername" required placeholder="e.g. ramesh_gupta">
+      </label>
+      <label>Password
+        <input type="password" id="signupPassword" required minlength="6" placeholder="Min. 6 characters">
+      </label>
+      <label>Clinical Role
+        <select id="signupRole" required>
+          <option value="">Select institutional role�</option>
+          <option>Principal Investigator</option>
+          <option>Clinical Research Coordinator</option>
+          <option>Data Manager</option>
+          <option>Regulatory Affairs Officer</option>
+          <option>Ethics Committee Member</option>
+          <option>Admin</option>
+        </select>
+      </label>
+      <button type="submit" class="btn-primary" style="justify-content:center; margin-top:8px;">Create Institutional Account</button>
+      <p class="auth-error" id="signupError"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appView" class="app-shell hidden">
+  <aside class="app-sidebar">
+    <div class="sidebar-seal" title="All India Institute of Ayurveda">?</div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-btn active" data-view="dashboard" title="Dashboard">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="nav-tooltip">Dashboard</span>
+      </button>
+      <button class="sidebar-btn" data-view="trials" title="Trials">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2v6L3.5 18a2 2 0 0 0 1.8 3h13.4a2 2 0 0 0 1.8-3L15 8V2"/><path d="M9 2h6"/><path d="M7 15h10"/></svg>
+        <span class="nav-tooltip">Trials</span>
+      </button>
+      <button class="sidebar-btn" data-view="patients" title="Patients">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-tooltip">Patients</span>
+      </button>
+      <button class="sidebar-btn" data-view="queries" title="Queries">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-4.06 7.19A8.5 8.5 0 0 1 3 15.5l-1 5 5-1a8.5 8.5 0 0 1 14-8z"/></svg>
+        <span class="nav-tooltip">Queries</span>
+      </button>
+      <button class="sidebar-btn" data-view="deviations" title="Deviations">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="nav-tooltip">Deviations</span>
+      </button>
+      <button class="sidebar-btn" data-view="history" title="Import History">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        <span class="nav-tooltip">Import History</span>
+      </button>
+      <button class="sidebar-btn" data-view="audit" title="Audit Log">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span class="nav-tooltip">Audit Log</span>
+      </button>
+      <button class="sidebar-btn" data-view="admin" id="adminNavBtn" title="Admin" style="display:none">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 8.7 9 10 5.2-1.3 9-5 9-10V6l-9-4Z"/></svg>
+        <span class="nav-tooltip">Admin</span>
+      </button>
+      <button class="sidebar-btn" data-view="settings" title="Settings">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="nav-tooltip">Settings</span>
+      </button>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+      <svg id="themeIconSun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+      <svg id="themeIconMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+    </button>
+    <div class="sidebar-user" id="sidebarUserInitials" title=""></div>
+  </aside>
+
+  <div class="app-main-wrap">
+    <!-- Top Utility Bar -->
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <span class="institution-tag">AIIA 🏥 Clinical Trials Unit</span>
+        <span class="topbar-sep">/</span>
+        <span class="active-view-title" id="activeViewTitle">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <span class="user-role-badge" id="userRole"></span>
+        <div class="user-chip">
+          <span id="userName" style="font-weight:500;"></span>
+          <button id="logoutBtn" class="btn-ghost-sm" title="Sign out">Log out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+
+      <!-- ================= 1. DASHBOARD VIEW ================= -->
+      <section id="view-dashboard" class="view">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Clinical Quality &amp; Compliance Overview</h2>
+            <p class="view-subtitle">Live real-time clinical trial indicators, edit-check queries, and GCP pharmacovigilance status.</p>
+          </div>
+          <div class="header-badge-row">
+            <span class="badge badge-clean">GCP &amp; NDCT 2019 Ready</span>
+            <span class="badge" style="background:var(--accent-tint); color:var(--accent);">Live DB Connected</span>
+          </div>
+        </div>
+
+        <div id="onboardingChecklist"></div>
+
+        <!-- Metric Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-label">Enrolled Patients</span>
+            <span class="stat-value" id="statTotal">�</span>
+            <span class="stat-hint" id="statCleanCount">� Clean records</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Resolved Queries</span>
+            <span class="stat-value" id="statResolved" style="color:var(--good);">�</span>
+            <span class="stat-hint">Audited resolutions</span>
+          </div>
+          <div class="stat-card stat-warn">
+            <span class="stat-label">Open Data Queries</span>
+            <span class="stat-value" id="statOpen">�</span>
+            <span class="stat-hint" id="statQueryRate">0.00 / patient</span>
+          </div>
+          <div class="stat-card stat-critical">
+            <span class="stat-label">Critical Alerts</span>
+            <span class="stat-value" id="statCritical">�</span>
+            <span class="stat-hint" id="statDevCount">0 deviations open</span>
+          </div>
+        </div>
+
+        <!-- Visual Ring Charts -->
+        <div class="infographic-row">
+          <div class="infographic-card dark">
+            <p class="infographic-label">Data Quality Index</p>
+            <svg width="130" height="130" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="48" fill="none" style="stroke: var(--accent-deep)" stroke-width="14"/>
+              <circle id="qualityRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--saffron)"/>
+              <text x="60" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="28" font-weight="700" style="fill: var(--accent-ink-on)" id="qualityScoreText">�</text>
+              <text x="60" y="75" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--accent-ink-on); opacity: 0.7">out of 100</text>
+            </svg>
+            <div class="quality-status-line" id="qualityRatingText">Calculating quality...</div>
+          </div>
+
+          <div class="infographic-card">
+            <p class="infographic-label">Clean vs Flagged Records</p>
+            <svg width="130" height="130" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="48" fill="none" style="stroke: var(--surface-2)" stroke-width="14"/>
+              <circle id="cleanRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--good)"/>
+              <circle id="flaggedRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--critical)"/>
+              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="cleanPctText">�</text>
+              <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--ink-soft)">clean patients</text>
+            </svg>
+            <div class="donut-legend">
+              <span style="color:var(--good)">? Clean (<span id="legendClean"></span>)</span>
+              <span style="color:var(--critical)">? Flagged (<span id="legendFlagged"></span>)</span>
+            </div>
+          </div>
+
+          <div class="infographic-card">
+            <p class="infographic-label">Open Query Severity Mix</p>
+            <svg width="130" height="130" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="48" fill="none" style="stroke: var(--surface-2)" stroke-width="14"/>
+              <circle id="critRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--critical)"/>
+              <circle id="majorRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--major)"/>
+              <circle id="minorRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--minor)"/>
+              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="severityTotalText">�</text>
+              <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--ink-soft)">open queries</text>
+            </svg>
+            <div class="donut-legend">
+              <span style="color:var(--critical)">? Critical (<span id="legendCritical"></span>)</span>
+              <span style="color:var(--major)">? Major (<span id="legendMajor"></span>)</span>
+              <span style="color:var(--minor)">? Minor (<span id="legendMinor"></span>)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Indicators Bar -->
+        <div class="secondary-kpis">
+          <div class="kpi-item">
+            <span class="kpi-title">Missing Vitals Rate:</span>
+            <span class="kpi-val" id="kpiMissingData">0.0%</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-title">Duplicate Rate:</span>
+            <span class="kpi-val">0.0% (Enforced Unique)</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-title">Active Deviations:</span>
+            <span class="kpi-val" id="kpiOpenDeviations">0</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-title">Compliance Standard:</span>
+            <span class="kpi-val" style="color:var(--good);">Ayurveda GCP / NDCT 2019</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. TRIALS VIEW ================= -->
+      <section id="view-trials" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Clinical Trials Portfolio</h2>
+            <p class="view-subtitle">Registered institutional and multi-center Ayurveda clinical research protocols.</p>
+          </div>
+          <button class="btn-primary" id="newTrialBtn">+ Register New Trial</button>
+        </div>
+        <div class="section-rule"></div>
+        <div id="trialsList" class="card-list"></div>
+      </section>
+
+      <!-- ================= 3. PATIENTS VIEW ================= -->
+      <section id="view-patients" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Patient Enrollment &amp; Ayurvedic Assessments</h2>
+            <p class="view-subtitle">Subject records with Prakriti (V/P/K), Agni, Koshtha, Nadi Pariksha, and safety vitals.</p>
+          </div>
+          <div class="toolbar-row">
+            <button class="btn-ghost-sm" id="downloadTemplateBtn" title="Download Excel template with clinical headers">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Template
+            </button>
+            <button class="btn-ghost-sm" id="importExcelBtn" title="Import multiple patient records from Excel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Excel
+            </button>
+            <button class="btn-ghost-sm" id="exportExcelBtn" title="Export entire database to multi-sheet Excel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export All Excel
+            </button>
+            <button class="btn-primary" id="newPatientBtn">+ Enroll Patient</button>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="patientSearchInput" placeholder="Search Patient ID, Diagnosis, Study...">
+          </div>
+          <select class="filter-select" id="patientTrialFilter">
+            <option value="all">All Clinical Trials</option>
+          </select>
+          <select class="filter-select" id="patientStatusFilter">
+            <option value="all">All Statuses</option>
+            <option value="Clean">Clean Only</option>
+            <option value="Flagged">Flagged Only</option>
+          </select>
+          <span class="result-count" id="patientResultCount"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="patientsTable">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Study / Site</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Visit</th>
+                <th>Prakriti Composition (%)</th>
+                <th>Diagnosis (Vyadhi)</th>
+                <th>Systolic BP</th>
+                <th>Pulse</th>
+                <th>Temp</th>
+                <th>SAE</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="patientsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 4. QUERIES VIEW ================= -->
+      <section id="view-queries" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Automated Edit-Check Queries</h2>
+            <p class="view-subtitle">Queries generated by the clinical rule engine. Resolving a query validates the corrected record.</p>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+
+        <div class="filter-bar">
+          <div class="filter-chip-group" id="querySeverityFilter">
+            <button class="filter-chip active" data-severity="all">All Severities</button>
+            <button class="filter-chip" data-severity="Critical">Critical</button>
+            <button class="filter-chip" data-severity="Major">Major</button>
+            <button class="filter-chip" data-severity="Minor">Minor</button>
+          </div>
+          <select class="filter-select" id="queryStatusFilter">
+            <option value="all">All Statuses</option>
+            <option value="Open">Open Only</option>
+            <option value="Resolved">Resolved Only</option>
+          </select>
+          <span class="result-count" id="queryResultCount"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="queriesTable">
+            <thead>
+              <tr>
+                <th>Query ID</th>
+                <th>Patient</th>
+                <th>Severity</th>
+                <th>Field</th>
+                <th>Issue Description</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="queriesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 5. DEVIATIONS VIEW ================= -->
+      <section id="view-deviations" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Protocol Deviations</h2>
+            <p class="view-subtitle">Non-compliance events, visit window variances, and prohibited medication logs.</p>
+          </div>
+          <button class="btn-primary" id="newDeviationBtn">+ Log Protocol Deviation</button>
+        </div>
+        <div class="section-rule"></div>
+        <div class="table-wrap">
+          <table id="deviationsTable">
+            <thead>
+              <tr>
+                <th>Dev ID</th>
+                <th>Patient</th>
+                <th>Severity</th>
+                <th>Description</th>
+                <th>Date Logged</th>
+                <th>Logged By</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="deviationsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 6. IMPORT HISTORY VIEW ================= -->
+      <section id="view-history" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Batch Import History</h2>
+            <p class="view-subtitle">Traceability log of all Excel batch ingestion cycles with record flags.</p>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Batch Name</th>
+                <th>Filename</th>
+                <th>Import Date</th>
+                <th>Imported By</th>
+                <th>Mode</th>
+                <th>Total Rows</th>
+                <th>Flagged Rows</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 7. AUDIT LOG VIEW ================= -->
+      <section id="view-audit" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">GCP Regulatory Audit Trail</h2>
+            <p class="view-subtitle">Immutable chronological record of all clinical and administrative actions (21 CFR Part 11 / NDCT 2019 aligned).</p>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+        <div id="auditTimeline" class="timeline"></div>
+      </section>
+
+      <!-- ================= 8. ADMIN VIEW ================= -->
+      <section id="view-admin" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">Institutional User Administration</h2>
+            <p class="view-subtitle">Manage clinical research roles, permissions, and accounts across AIIA.</p>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+        <div class="table-wrap">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Assigned Role</th>
+                <th>Registered</th>
+                <th>Change Role</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 9. SETTINGS VIEW ================= -->
+      <section id="view-settings" class="view hidden">
+        <div class="view-header-row">
+          <div>
+            <h2 class="view-title">User Settings &amp; Security Posture</h2>
+            <p class="view-subtitle">Manage profile credentials and review CTMS regulatory compliance controls.</p>
+          </div>
+        </div>
+        <div class="section-rule"></div>
+
+        <div class="settings-grid">
+          <div class="infographic-card" style="align-items: stretch;">
+            <p class="infographic-label">My Profile</p>
+            <form id="profileForm" class="settings-form">
+              <label>Display Name
+                <input type="text" id="profileDisplayName">
+              </label>
+              <label>Username (System ID)
+                <input type="text" id="profileUsername" disabled>
+              </label>
+              <label>Role (Assigned by Administrator)
+                <input type="text" id="profileRole" disabled>
+              </label>
+              <button type="submit" class="btn-primary" style="align-self:flex-start;">Save Profile</button>
+            </form>
+          </div>
+
+          <div class="infographic-card" style="align-items: stretch;">
+            <p class="infographic-label">Change Password</p>
+            <form id="passwordForm" class="settings-form">
+              <label>Current Password
+                <input type="password" name="currentPassword" required placeholder="🔑🔑🔑🔑🔑🔑🔑">
+              </label>
+              <label>New Password
+                <input type="password" name="newPassword" required minlength="6" placeholder="Min. 6 characters">
+              </label>
+              <button type="submit" class="btn-primary" style="align-self:flex-start;">Update Password</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="infographic-card" style="align-items: stretch; margin-top: 20px;">
+          <p class="infographic-label">Security &amp; Regulatory Compliance Specifications</p>
+          <div class="compliance-grid">
+            <div><strong>Password Security:</strong> Hashed with bcrypt (salt rounds: 10). Plaintext passwords never stored.</div>
+            <div><strong>Session Security:</strong> Cryptographically signed JWT tokens with 7-day expiration.</div>
+            <div><strong>Role-Based Access Control:</strong> Backend enforced permissions on every mutating endpoint.</div>
+            <div><strong>Audit Trail:</strong> Immutable log records user identity, action description, and UTC timestamps.</div>
+            <div><strong>Edit-Check Integrity:</strong> Re-validates clinical rules before permitting query resolution.</div>
+            <div><strong>Interoperability:</strong> Proof-of-concept exports for HL7 FHIR R4 JSON &amp; CDISC ODM-XML v1.3.2.</div>
+          </div>
+          <p class="compliance-disclaimer">
+            Architecture aligns with New Drugs and Clinical Trials (NDCT) Rules 2019, GCP guidelines for clinical trials in India, and the Digital Personal Data Protection (DPDP) Act 2023.
+          </p>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <h3 style="font-family: var(--font-display); font-size: 16px; margin: 0 0 12px;">My Recent Activity</h3>
+          <div id="myActivityTimeline" class="timeline"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODAL OVERLAY ===================== -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<!-- ===================== TOAST NOTIFICATIONS ===================== -->
+<div id="toastStack" class="toast-stack"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
