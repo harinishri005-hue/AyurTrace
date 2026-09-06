@@ -58,6 +58,21 @@ function evaluatePatient(p) {
     }
   }
 
+  // 1b. Informed Consent (mandatory under NDCT 2019 / GCP prior to any protocol procedure)
+  if (!p.consent_obtained) {
+    issues.push({
+      field: 'consent_obtained',
+      issue: 'Informed consent not documented — enrollment requires a signed ICF (Informed Consent Form) per NDCT Rules 2019 / GCP before any study procedure',
+      severity: 'Major'
+    });
+  } else if (!p.consent_date || !String(p.consent_date).trim()) {
+    issues.push({
+      field: 'consent_date',
+      issue: 'Consent marked obtained but no consent date recorded — required for audit traceability',
+      severity: 'Minor'
+    });
+  }
+
   // 2. Vital Signs: Systolic Blood Pressure (mmHg)
   if (p.systolic_bp !== null && p.systolic_bp !== undefined && p.systolic_bp !== '') {
     const bp = Number(p.systolic_bp);

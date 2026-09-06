@@ -327,6 +327,14 @@ async function loadDashboard() {
 
     document.getElementById('kpiMissingData').textContent = m.missingDataRate + '%';
     document.getElementById('kpiOpenDeviations').textContent = m.openDeviations;
+
+    const banner = document.getElementById('roleFocusBanner');
+    if (banner && m.roleFocus) {
+      banner.innerHTML = '<span class="role-focus-label">' + escapeHtml(m.roleFocus.headline) + '</span>' +
+        m.roleFocus.kpis.map(k =>
+          '<div class="role-focus-kpi"><span class="rf-value">' + escapeHtml(String(k.value)) + '</span><span class="rf-label">' + escapeHtml(k.label) + '</span></div>'
+        ).join('');
+    }
   } catch (err) { showToast(err.message, 'error'); }
 }
 
@@ -336,7 +344,7 @@ async function loadTrialsCache() {
     const select = document.getElementById('patientTrialFilter');
     if (select) {
       select.innerHTML = '<option value="all">All Clinical Trials</option>' +
-        TRIALS_CACHE.map(t => '<option value="' + t.id + '">' + escapeHtml(t.study_id) + ' � ' + escapeHtml(t.title) + '</option>').join('');
+        TRIALS_CACHE.map(t => '<option value="' + t.id + '">' + escapeHtml(t.study_id) + ' – ' + escapeHtml(t.title) + '</option>').join('');
     }
   } catch (err) {}
 }
@@ -362,10 +370,10 @@ async function loadTrials() {
         '<div class="trial-card-info" style="flex:1">' +
           '<div class="trial-card-title">' + escapeHtml(t.title) + '</div>' +
           '<div class="trial-card-meta">' +
-            t.study_id + ' � ' + (t.phase || 'Phase N/A') +
-            (t.ctri_number ? ' � CTRI: ' + escapeHtml(t.ctri_number) : '') +
-            (t.ndct_registration_no ? ' � NDCT: ' + escapeHtml(t.ndct_registration_no) : '') +
-            (t.ethics_committee_no ? ' � IEC: ' + escapeHtml(t.ethics_committee_no) : '') +
+            t.study_id + ' – ' + (t.phase || 'Phase N/A') +
+            (t.ctri_number ? ' – CTRI: ' + escapeHtml(t.ctri_number) : '') +
+            (t.ndct_registration_no ? ' – NDCT: ' + escapeHtml(t.ndct_registration_no) : '') +
+            (t.ethics_committee_no ? ' – IEC: ' + escapeHtml(t.ethics_committee_no) : '') +
           '</div>' +
         '</div>' +
         '<div class="trial-card-actions">' +
@@ -488,8 +496,8 @@ function renderPatientsTable() {
       '<td>' + (escapeHtml(p.ayurvedic_diagnosis) || '-') + '</td>' +
       '<td class="mono">' + (p.systolic_bp != null ? (p.systolic_bp + ' mmHg') : '-') + '</td>' +
       '<td class="mono">' + (p.pulse_rate != null ? (p.pulse_rate + ' bpm') : '-') + '</td>' +
-      '<td class="mono">' + (p.temperature != null ? (p.temperature + ' �C') : '-') + '</td>' +
-      '<td>' + (p.is_sae ? '<span class="sae-flag" title="Serious Adverse Event">? SAE</span>' : '-') + '</td>' +
+      '<td class="mono">' + (p.temperature != null ? (p.temperature + ' °C') : '-') + '</td>' +
+      '<td>' + (p.is_sae ? '<span class="sae-flag" title="Serious Adverse Event">⚠️ SAE</span>' : '-') + '</td>' +
       '<td><span class="badge badge-' + p.status.toLowerCase() + '">' + p.status + '</span></td>' +
       '<td><div style="display:flex; gap:4px;">' +
         '<button class="btn-small" onclick="openEditPatientModal(' + p.id + ')" title="Edit record"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg> Edit</button>' +
@@ -528,18 +536,23 @@ document.getElementById('newPatientBtn').addEventListener('click', async () => {
       '<label>Enrollment Date<input type="date" name="enrollDate" value="' + new Date().toISOString().split('T')[0] + '"></label>' +
       '<label>Visit Date<input type="date" name="visitDate" value="' + new Date().toISOString().split('T')[0] + '"></label>' +
       '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Ayurvedic Nidana Panchaka &amp; Prakriti Assessment</label>' +
-      '<label>Prakriti � Vata %<input type="number" name="prakritiVata" min="0" max="100" placeholder="e.g. 45"></label>' +
-      '<label>Prakriti � Pitta %<input type="number" name="prakritiPitta" min="0" max="100" placeholder="e.g. 35"></label>' +
-      '<label>Prakriti � Kapha %<input type="number" name="prakritiKapha" min="0" max="100" placeholder="e.g. 20"></label>' +
+      '<label>Prakriti – Vata %<input type="number" name="prakritiVata" min="0" max="100" placeholder="e.g. 45"></label>' +
+      '<label>Prakriti – Pitta %<input type="number" name="prakritiPitta" min="0" max="100" placeholder="e.g. 35"></label>' +
+      '<label>Prakriti – Kapha %<input type="number" name="prakritiKapha" min="0" max="100" placeholder="e.g. 20"></label>' +
       '<label>Agni<select name="agni"><option value="">Select Agni...</option><option>Sama</option><option>Manda</option><option>Tikshna</option><option>Vishama</option></select></label>' +
       '<label>Koshtha<select name="koshtha"><option value="">Select Koshtha...</option><option>Mridu</option><option>Madhyama</option><option>Krura</option></select></label>' +
       '<label class="full">Nadi Pariksha Note<input type="text" name="nadiNote" placeholder="e.g. Sarpa gati, Vata-dominant pulse"></label>' +
       '<label class="full">Ayurvedic Diagnosis (Vyadhi)<input type="text" name="ayurvedicDiagnosis" placeholder="e.g. Chittodvega (Generalized Anxiety)"></label>' +
       '<label class="full">Chikitsa Protocol (Treatment)<input type="text" name="chikitsa" placeholder="e.g. Ashwagandha Churna 3g BD with Ksheera"></label>' +
+      '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Informed Consent (NDCT 2019 / GCP Requirement)</label>' +
+      '<div class="checkbox-row"><input type="checkbox" name="consentObtained" id="consentObtainedCheck"><label for="consentObtainedCheck" style="font-weight:600;">Signed Informed Consent Form (ICF) Obtained</label></div>' +
+      '<label>ICF Version<input type="text" name="consentVersion" placeholder="e.g. v2.1 (2026-01-01)"></label>' +
+      '<label>Consent Date<input type="date" name="consentDate"></label>' +
+      '<label class="full">Witnessed By<input type="text" name="consentWitness" placeholder="e.g. Dr. Priya Sharma (CRC)"></label>' +
       '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Safety Vital Signs (Automated Edit-Check Monitored)</label>' +
-      '<label>Systolic BP (mmHg)<input type="number" name="systolicBP" placeholder="Normal: 90�140"></label>' +
-      '<label>Pulse Rate (bpm)<input type="number" name="pulseRate" placeholder="Normal: 60�100"></label>' +
-      '<label>Body Temp (�C)<input type="number" step="0.1" name="temperature" placeholder="Normal: 36.0�37.5"></label>' +
+      '<label>Systolic BP (mmHg)<input type="number" name="systolicBP" placeholder="Normal: 90–140"></label>' +
+      '<label>Pulse Rate (bpm)<input type="number" name="pulseRate" placeholder="Normal: 60–100"></label>' +
+      '<label>Body Temp (°C)<input type="number" step="0.1" name="temperature" placeholder="Normal: 36.0–37.5"></label>' +
       '<label>Weight (kg)<input type="number" step="0.1" name="weight" placeholder="e.g. 64.5"></label>' +
       '<label>Height (cm)<input type="number" step="0.1" name="height" placeholder="e.g. 165.0"></label>' +
       '<div class="checkbox-row"><input type="checkbox" name="isSAE" id="isSAECheck"><label for="isSAECheck" style="font-weight:600; color:var(--critical);">Serious Adverse Event (SAE) Escalation</label></div>' +
@@ -552,6 +565,7 @@ document.getElementById('newPatientBtn').addEventListener('click', async () => {
     const fd = new FormData(e.target);
     const payload = Object.fromEntries(fd);
     payload.isSAE = fd.has('isSAE');
+    payload.consentObtained = fd.has('consentObtained');
     const btn = e.target.querySelector('button[type="submit"]');
     const restore = setButtonLoading(btn, 'Validating & saving...');
 
@@ -560,11 +574,11 @@ document.getElementById('newPatientBtn').addEventListener('click', async () => {
       const preview = document.getElementById('patientFormPreview');
 
       if (result.issuesRaised.length > 0) {
-        preview.innerHTML = '<div class="issues-preview"><strong>' + result.issuesRaised.length + ' edit check(s) flagged � queries raised:</strong><ul>' +
+        preview.innerHTML = '<div class="issues-preview"><strong>' + result.issuesRaised.length + ' edit check(s) flagged – queries raised:</strong><ul>' +
           result.issuesRaised.map(i => '<li><strong>[' + i.severity + ']</strong> ' + escapeHtml(i.issue) + '</li>').join('') + '</ul></div>';
-        showToast('Patient enrolled � ' + result.issuesRaised.length + ' query(ies) raised.', 'error');
+        showToast('Patient enrolled – ' + result.issuesRaised.length + ' query(ies) raised.', 'error');
       } else {
-        preview.innerHTML = '<div class="issues-preview clean">? All edit checks passed. Record verified Clean.</div>';
+        preview.innerHTML = '<div class="issues-preview clean">✅ All edit checks passed. Record verified Clean.</div>';
         showToast('Patient enrolled successfully (Clean).', 'success');
       }
 
@@ -595,18 +609,23 @@ function openEditPatientModal(patientId) {
       '<label>Enrollment Date<input type="date" name="enrollDate" value="' + (p.enroll_date || '') + '"></label>' +
       '<label>Visit Date<input type="date" name="visitDate" value="' + (p.visit_date || '') + '"></label>' +
       '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Ayurvedic Assessment</label>' +
-      '<label>Prakriti � Vata %<input type="number" name="prakritiVata" min="0" max="100" value="' + (p.prakriti_vata != null ? p.prakriti_vata : '') + '"></label>' +
-      '<label>Prakriti � Pitta %<input type="number" name="prakritiPitta" min="0" max="100" value="' + (p.prakriti_pitta != null ? p.prakriti_pitta : '') + '"></label>' +
-      '<label>Prakriti � Kapha %<input type="number" name="prakritiKapha" min="0" max="100" value="' + (p.prakriti_kapha != null ? p.prakriti_kapha : '') + '"></label>' +
+      '<label>Prakriti – Vata %<input type="number" name="prakritiVata" min="0" max="100" value="' + (p.prakriti_vata != null ? p.prakriti_vata : '') + '"></label>' +
+      '<label>Prakriti – Pitta %<input type="number" name="prakritiPitta" min="0" max="100" value="' + (p.prakriti_pitta != null ? p.prakriti_pitta : '') + '"></label>' +
+      '<label>Prakriti – Kapha %<input type="number" name="prakritiKapha" min="0" max="100" value="' + (p.prakriti_kapha != null ? p.prakriti_kapha : '') + '"></label>' +
       '<label>Agni<select name="agni"><option value="">Select Agni...</option>' + ['Sama','Manda','Tikshna','Vishama'].map(v => '<option ' + (p.agni === v ? 'selected' : '') + '>' + v + '</option>').join('') + '</select></label>' +
       '<label>Koshtha<select name="koshtha"><option value="">Select Koshtha...</option>' + ['Mridu','Madhyama','Krura'].map(v => '<option ' + (p.koshtha === v ? 'selected' : '') + '>' + v + '</option>').join('') + '</select></label>' +
       '<label class="full">Nadi Pariksha Note<input type="text" name="nadiNote" value="' + escapeHtml(p.nadi_note || '') + '"></label>' +
       '<label class="full">Ayurvedic Diagnosis<input type="text" name="ayurvedicDiagnosis" value="' + escapeHtml(p.ayurvedic_diagnosis || '') + '"></label>' +
       '<label class="full">Chikitsa Protocol<input type="text" name="chikitsa" value="' + escapeHtml(p.chikitsa || '') + '"></label>' +
+      '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Informed Consent (NDCT 2019 / GCP Requirement)</label>' +
+      '<div class="checkbox-row"><input type="checkbox" name="consentObtained" id="editConsentObtainedCheck" ' + (p.consent_obtained ? 'checked' : '') + '><label for="editConsentObtainedCheck" style="font-weight:600;">Signed Informed Consent Form (ICF) Obtained</label></div>' +
+      '<label>ICF Version<input type="text" name="consentVersion" value="' + escapeHtml(p.consent_version || '') + '"></label>' +
+      '<label>Consent Date<input type="date" name="consentDate" value="' + (p.consent_date || '') + '"></label>' +
+      '<label class="full">Witnessed By<input type="text" name="consentWitness" value="' + escapeHtml(p.consent_witness || '') + '"></label>' +
       '<label class="full" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; font-weight: 600; color: var(--ink);">Vital Signs</label>' +
       '<label>Systolic BP (mmHg)<input type="number" name="systolicBP" value="' + (p.systolic_bp != null ? p.systolic_bp : '') + '"></label>' +
       '<label>Pulse Rate (bpm)<input type="number" name="pulseRate" value="' + (p.pulse_rate != null ? p.pulse_rate : '') + '"></label>' +
-      '<label>Body Temp (�C)<input type="number" step="0.1" name="temperature" value="' + (p.temperature != null ? p.temperature : '') + '"></label>' +
+      '<label>Body Temp (°C)<input type="number" step="0.1" name="temperature" value="' + (p.temperature != null ? p.temperature : '') + '"></label>' +
       '<label>Weight (kg)<input type="number" step="0.1" name="weight" value="' + (p.weight != null ? p.weight : '') + '"></label>' +
       '<label>Height (cm)<input type="number" step="0.1" name="height" value="' + (p.height != null ? p.height : '') + '"></label>' +
       '<div class="checkbox-row"><input type="checkbox" name="isSAE" id="editIsSAECheck" ' + (p.is_sae ? 'checked' : '') + '><label for="editIsSAECheck" style="font-weight:600; color:var(--critical);">Serious Adverse Event (SAE)</label></div>' +
@@ -619,6 +638,7 @@ function openEditPatientModal(patientId) {
     const fd = new FormData(e.target);
     const payload = Object.fromEntries(fd);
     payload.isSAE = fd.has('isSAE');
+    payload.consentObtained = fd.has('consentObtained');
     const btn = e.target.querySelector('button[type="submit"]');
     const restore = setButtonLoading(btn, 'Saving...');
 
@@ -629,9 +649,9 @@ function openEditPatientModal(patientId) {
       if (result.newIssuesRaised.length > 0) {
         preview.innerHTML = '<div class="issues-preview"><strong>' + result.newIssuesRaised.length + ' new issue(s) raised:</strong><ul>' +
           result.newIssuesRaised.map(i => '<li><strong>[' + i.severity + ']</strong> ' + escapeHtml(i.issue) + '</li>').join('') + '</ul></div>';
-        showToast('Saved � new issue(s) detected.', 'error');
+        showToast('Saved – new issue(s) detected.', 'error');
       } else {
-        preview.innerHTML = '<div class="issues-preview clean">? Record updated. If this corrected previous queries, navigate to Queries to sign off resolution.</div>';
+        preview.innerHTML = '<div class="issues-preview clean">✅ Record updated. If this corrected previous queries, navigate to Queries to sign off resolution.</div>';
         showToast('Patient record updated.', 'success');
       }
 
@@ -703,7 +723,7 @@ document.getElementById('importExcelBtn').addEventListener('click', async () => 
     '<form id="importForm" class="form-grid">' +
       '<label class="full">Excel Workbook (.xlsx)<input type="file" name="file" accept=".xlsx" required></label>' +
       '<label class="full">Target Trial Protocol<select name="trialId"><option value="">Auto-detect from Study_ID</option>' + trialOptions + '</select></label>' +
-      '<label class="full">Ingestion Mode<select name="mode"><option value="new-batch">New batch � preserve existing records and ingest new batch</option><option value="merge">Merge � update matching Patient IDs, insert new ones</option><option value="new-only">New only � skip rows whose Patient ID already exists</option><option value="replace">Replace � overwrite matching patient records completely</option></select></label>' +
+      '<label class="full">Ingestion Mode<select name="mode"><option value="new-batch">New batch – preserve existing records and ingest new batch</option><option value="merge">Merge – update matching Patient IDs, insert new ones</option><option value="new-only">New only – skip rows whose Patient ID already exists</option><option value="replace">Replace – overwrite matching patient records completely</option></select></label>' +
       '<div class="modal-actions"><button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button><button type="submit" class="btn-primary">Execute Ingestion</button></div>' +
     '</form><div id="importResultPreview"></div>');
 
@@ -726,7 +746,7 @@ document.getElementById('importExcelBtn').addEventListener('click', async () => 
         'Row ' + row.row + (row.patientId ? ' (' + escapeHtml(row.patientId) + ')' : '') + ': ' + escapeHtml(row.reason)
       ).join('<br>');
       const skippedSummary = result.skipped > 0 ? '<br><small>' + skippedDetails + (result.skipped > 5 ? '<br>...and ' + (result.skipped - 5) + ' more row(s).' : '') + '</small>' : '';
-      document.getElementById('importResultPreview').innerHTML = '<div class="issues-preview ' + (result.flaggedCount === 0 && result.skipped === 0 ? 'clean' : '') + '"><strong>Batch Ingestion Completed:</strong> ' + result.imported + ' record(s) processed.<br>? Clean: ' + result.clean + ' | ? Flagged: ' + result.flaggedCount + ' | ? Skipped: ' + result.skipped + skippedSummary + '</div>';
+      document.getElementById('importResultPreview').innerHTML = '<div class="issues-preview ' + (result.flaggedCount === 0 && result.skipped === 0 ? 'clean' : '') + '"><strong>Batch Ingestion Completed:</strong> ' + result.imported + ' record(s) processed.<br>✅ Clean: ' + result.clean + ' | ⚠️ Flagged: ' + result.flaggedCount + ' | ⏭️ Skipped: ' + result.skipped + skippedSummary + '</div>';
 
       showToast('Imported ' + result.imported + ' patient rows.', 'success');
       setTimeout(() => {

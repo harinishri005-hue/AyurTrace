@@ -67,6 +67,84 @@ router.get('/dashboard', (req, res) => {
     `).get().count;
     const missingDataRate = totalPatients > 0 ? ((missingVitals / totalPatients) * 100).toFixed(1) : 0;
 
+    // Consent compliance (used by PI/EC/Regulatory role views)
+    const consentGaps = db.prepare('SELECT COUNT(*) as count FROM patients WHERE consent_obtained = 0').get().count;
+
+    // Ethics-specific figures
+    const pendingEthicsApprovals = db.prepare("SELECT COUNT(*) as count FROM trials WHERE ethics_approval_status = 'Pending'").get().count;
+    const rejectedOrExpiredEthics = db.prepare("SELECT COUNT(*) as count FROM trials WHERE ethics_approval_status IN ('Rejected','Expired')").get().count;
+
+    // Regulatory-specific figures
+    const trialsMissingCTRI = db.prepare("SELECT COUNT(*) as count FROM trials WHERE ctri_number IS NULL OR TRIM(ctri_number) = ''").get().count;
+    const trialsMissingNDCT = db.prepare("SELECT COUNT(*) as count FROM trials WHERE ndct_registration_no IS NULL OR TRIM(ndct_registration_no) = ''").get().count;
+
+    // Role-specific KPI focus: each role sees the handful of numbers most relevant to their job,
+    // rather than one identical dashboard for everyone.
+    const role = req.user.role;
+    let roleFocus = { role, headline: 'General Overview', kpis: [] };
+
+    if (role === config.roles.EC) {
+      roleFocus = {
+        role,
+        headline: 'Ethics Committee Focus',
+        kpis: [
+          { label: 'Trials Pending Ethics Approval', value: pendingEthicsApprovals },
+          { label: 'Rejected / Expired Approvals', value: rejectedOrExpiredEthics },
+          { label: 'Patients Missing Documented Consent', value: consentGaps }
+        ]
+      };
+    } else if (role === config.roles.RAO) {
+      roleFocus = {
+        role,
+        headline: 'Regulatory Affairs Focus',
+        kpis: [
+          { label: 'Trials Missing CTRI Number', value: trialsMissingCTRI },
+          { label: 'Trials Missing NDCT Registration', value: trialsMissingNDCT },
+          { label: 'Open Protocol Deviations', value: openDeviations }
+        ]
+      };
+    } else if (role === config.roles.PI) {
+      roleFocus = {
+        role,
+        headline: 'Principal Investigator Focus',
+        kpis: [
+          { label: 'Open Critical Queries', value: openCritical },
+          { label: 'Patients Missing Consent Documentation', value: consentGaps },
+          { label: 'Open Protocol Deviations', value: openDeviations }
+        ]
+      };
+    } else if (role === config.roles.CRC) {
+      roleFocus = {
+        role,
+        headline: 'Clinical Coordinator Focus',
+        kpis: [
+          { label: 'Flagged Records Needing Correction', value: flaggedPatients },
+          { label: 'Open Data Queries', value: openQueries },
+          { label: 'Patients Missing Consent Documentation', value: consentGaps }
+        ]
+      };
+    } else if (role === config.roles.DM) {
+      roleFocus = {
+        role,
+        headline: 'Data Manager Focus',
+        kpis: [
+          { label: 'Data Quality Score', value: qualityScore + '%' },
+          { label: 'Missing Vitals Rate', value: missingDataRate + '%' },
+          { label: 'Open Queries (all severities)', value: openQueries }
+        ]
+      };
+    } else {
+      roleFocus = {
+        role,
+        headline: 'Administrator Overview',
+        kpis: [
+          { label: 'Pending Ethics Approvals', value: pendingEthicsApprovals },
+          { label: 'Trials Missing Regulatory Numbers', value: trialsMissingCTRI + trialsMissingNDCT },
+          { label: 'Consent Documentation Gaps', value: consentGaps }
+        ]
+      };
+    }
+
     res.json({
       totalPatients,
       cleanPatients,
@@ -81,7 +159,9 @@ router.get('/dashboard', (req, res) => {
       openDeviations,
       qualityScore,
       missingDataRate,
-      queryRate: totalPatients > 0 ? (totalQueries / totalPatients).toFixed(2) : 0
+      queryRate: totalPatients > 0 ? (totalQueries / totalPatients).toFixed(2) : 0,
+      consentGaps,
+      roleFocus
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate dashboard metrics: ' + err.message });
@@ -228,15 +308,19 @@ router.post('/patients', (req, res) => {
         visit_type, visit_date, systolic_bp, pulse_rate, temperature, weight, height,
         is_sae, ae_note, prakriti_vata, prakriti_pitta, prakriti_kapha,
         agni, koshtha, nadi_note, ayurvedic_diagnosis, chikitsa,
+        consent_obtained, consent_version, consent_date, consent_witness,
         status, review_status, source
       ) VALUES (
         ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?,
+        ?, ?, ?, ?,
         'Clean', 'Unreviewed', 'Manual'
       )
     `);
+
+    const consentVal = (p.consentObtained === true || p.consentObtained === 1 || p.consent_obtained === 1 || String(p.consentObtained) === 'true') ? 1 : 0;
 
     const result = insertStmt.run(
       trialId,
@@ -262,7 +346,11 @@ router.post('/patients', (req, res) => {
       p.koshtha || '',
       p.nadiNote || p.nadi_note || '',
       p.ayurvedicDiagnosis || p.ayurvedic_diagnosis || '',
-      p.chikitsa || ''
+      p.chikitsa || '',
+      consentVal,
+      p.consentVersion || p.consent_version || '',
+      p.consentDate || p.consent_date || '',
+      p.consentWitness || p.consent_witness || ''
     );
 
     const patientDbId = result.lastInsertRowid;
@@ -321,6 +409,7 @@ router.patch('/patients/:id', (req, res) => {
         prakriti_vata = ?, prakriti_pitta = ?, prakriti_kapha = ?,
         agni = ?, koshtha = ?, nadi_note = ?,
         ayurvedic_diagnosis = ?, chikitsa = ?,
+        consent_obtained = ?, consent_version = ?, consent_date = ?, consent_witness = ?,
         updated_at = datetime('now')
       WHERE id = ?
     `).run(
@@ -347,6 +436,10 @@ router.patch('/patients/:id', (req, res) => {
       p.nadiNote !== undefined ? p.nadiNote : existing.nadi_note,
       p.ayurvedicDiagnosis !== undefined ? p.ayurvedicDiagnosis : existing.ayurvedic_diagnosis,
       p.chikitsa !== undefined ? p.chikitsa : existing.chikitsa,
+      p.consentObtained !== undefined ? ((p.consentObtained === true || p.consentObtained === 1 || String(p.consentObtained) === 'true') ? 1 : 0) : existing.consent_obtained,
+      p.consentVersion !== undefined ? p.consentVersion : existing.consent_version,
+      p.consentDate !== undefined ? p.consentDate : existing.consent_date,
+      p.consentWitness !== undefined ? p.consentWitness : existing.consent_witness,
       patientId
     );
 

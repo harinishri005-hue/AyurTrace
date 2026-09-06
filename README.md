@@ -5,7 +5,7 @@
 
 ---
 
-## ?? Overview & Core Vision
+## 📋 Overview & Core Vision
 
 The **AIIA Clinical Trials Dashboard** is an enterprise-grade Clinical Trial Management System purpose-built for institutional and academic clinical research in traditional Ayurveda medicine. Unlike generic CRUD dashboards, it implements genuine regulatory workflows:
 
@@ -18,7 +18,7 @@ The **AIIA Clinical Trials Dashboard** is an enterprise-grade Clinical Trial Man
 
 ---
 
-## ??? System Architecture
+## 🏗️ System Architecture
 
 ```
 aiia-ctms/
@@ -26,26 +26,26 @@ aiia-ctms/
 +-- .env                         # Server environment configuration
 +-- README.md                    # Project documentation & runbook
 +-- server/
-�   +-- index.js                 # Express application, CORS, rate-limiting & static serving
-�   +-- config/
-�   �   +-- index.js             # Clinical thresholds, roles, Ayurvedic classifications
-�   +-- db/
-�   �   +-- index.js             # SQLite connection (WAL mode & PRAGMA foreign keys)
-�   �   +-- schema.sql           # Relational schema (7 core tables + indexes)
-�   �   +-- seed.js              # Comprehensive Ayurveda clinical demo seeder
-�   +-- middleware/
-�   �   +-- auth.js              # Bearer JWT verification & context injection
-�   �   +-- rbac.js              # Role-Based Access Control middleware
-�   +-- services/
-�   �   +-- editCheckEngine.js   # Automated edit-check & re-validation engine
-�   �   +-- auditService.js      # Centralized GCP audit logger
-�   �   +-- excelService.js      # Excel template, batch importer & workbook exporter
-�   �   +-- interoperabilityService.js # HL7 FHIR R4 JSON & CDISC ODM-XML generators
-�   +-- routes/
-�   �   +-- auth.js              # Signup, login, profile, password, admin user management
-�   �   +-- ctms.js              # Dashboard metrics, trials, patients, queries, deviations, exports
-�   +-- tests/
-�       +-- verify.js            # Automated end-to-end integration test suite
+│   +-- index.js                 # Express application, CORS, rate-limiting & static serving
+│   +-- config/
+│   │   +-- index.js             # Clinical thresholds, roles, Ayurvedic classifications
+│   +-- db/
+│   │   +-- index.js             # SQLite connection (WAL mode & PRAGMA foreign keys)
+│   │   +-- schema.sql           # Relational schema (7 core tables + indexes)
+│   │   +-- seed.js              # Comprehensive Ayurveda clinical demo seeder
+│   +-- middleware/
+│   │   +-- auth.js              # Bearer JWT verification & context injection
+│   │   +-- rbac.js              # Role-Based Access Control middleware
+│   +-- services/
+│   │   +-- editCheckEngine.js   # Automated edit-check & re-validation engine
+│   │   +-- auditService.js      # Centralized GCP audit logger
+│   │   +-- excelService.js      # Excel template, batch importer & workbook exporter
+│   │   +-- interoperabilityService.js # HL7 FHIR R4 JSON & CDISC ODM-XML generators
+│   +-- routes/
+│   │   +-- auth.js              # Signup, login, profile, password, admin user management
+│   │   +-- ctms.js              # Dashboard metrics, trials, patients, queries, deviations, exports
+│   +-- tests/
+│       +-- verify.js            # Automated end-to-end integration test suite
 +-- client/
     +-- index.html               # Institutional SPA shell with sidebar & utility bar
     +-- style.css                # Deep Indigo & Saffron design system, light/dark modes
@@ -54,7 +54,7 @@ aiia-ctms/
 
 ---
 
-## ?? Quick Start Guide
+## 🚀 Quick Start Guide
 
 ### Prerequisites
 - **Node.js**: v18+ (tested on Node v24 LTS)
@@ -79,7 +79,7 @@ Launch the server:
 npm start
 ```
 The application will be accessible at:
-?? **`http://localhost:4000`**
+🌐 **`http://localhost:4000`**
 
 ### 4. Running the Automated Test Suite
 Execute the 24-point end-to-end test suite:
@@ -89,7 +89,7 @@ npm test
 
 ---
 
-## ?? Demo User Credentials
+## 🔑 Demo User Credentials
 
 The database is pre-seeded with accounts for all institutional roles. The default password for all demo accounts is **`admin123`**:
 
@@ -104,7 +104,7 @@ The database is pre-seeded with accounts for all institutional roles. The defaul
 
 ---
 
-## ?? Core Clinical & Ayurvedic Modules
+## 📊 Core Clinical & Ayurvedic Modules
 
 ### 1. Dashboard
 - **Quality Score Index:** Live calculation factoring clean vs. flagged records, active query rates, and open critical safety alerts.
@@ -112,13 +112,13 @@ The database is pre-seeded with accounts for all institutional roles. The defaul
 - **Secondary KPIs:** Missing data rate, duplicate enforcement, open protocol deviations, and onboarding progress checklist.
 
 ### 2. Clinical Trials Module
-- Tracks **Study ID**, **Protocol Title**, **Phase** (Phase I�IV), **CTRI Number**, **NDCT Registration Number**, and **Institutional Ethics Committee (IEC) Ref No.**
+- Tracks **Study ID**, **Protocol Title**, **Phase** (Phase I–IV), **CTRI Number**, **NDCT Registration Number**, and **Institutional Ethics Committee (IEC) Ref No.**
 - Distinctive **Ethics Seal Badges** (*Pending*, *Approved*, *Rejected*, *Expired*).
 - Status updates restricted to **Ethics Committee Members** and **Admins**.
 - One-click export of the entire trial and its enrolled cohort to **FHIR R4 Bundle** or **CDISC ODM-XML**.
 
 ### 3. Patient Enrollment & Ayurvedic Intake
-- Comprehensive demographic and clinical visit tracking (Screening, Baseline, Follow-up 1�3).
+- Comprehensive demographic and clinical visit tracking (Screening, Baseline, Follow-up 1–3).
 - **Ayurvedic Nidana Panchaka & Dosha Assessment:**
   - **Prakriti Distribution:** Vata, Pitta, Kapha scores (automatically normalized into exact 100% composition percentages).
   - **Agni (Digestive Capacity):** *Sama*, *Manda*, *Tikshna*, *Vishama*.
@@ -132,10 +132,10 @@ The database is pre-seeded with accounts for all institutional roles. The defaul
 ### 4. Automated Edit-Check Engine
 When a patient record is created, edited, or batch-imported from Excel, the rule engine validates:
 - Mandatory clinical identifiers (*Patient ID*, *Study ID*, *Site ID*, *Gender*, *Age*).
-- **Blood Pressure Bounds:** Normal 90�140 mmHg. Major query if 141�180 or 80�89. Critical query if >180 (hypertensive crisis) or <80 (severe hypotension).
-- **Pulse Rate Bounds:** Normal 60�100 bpm. Major query if 101�120 or 50�59. Critical query if >120 (tachycardia) or <50 (bradycardia).
-- **Temperature Bounds:** Normal 36.0�37.5 �C. Major query if 37.6�38.5. Critical query if >38.5 (pyrexia) or <35.0 (hypothermia).
-- **Prakriti Proportions:** Verifies that Vata + Pitta + Kapha sum to 100% (tolerance �1%).
+- **Blood Pressure Bounds:** Normal 90–140 mmHg. Major query if 141–180 or 80–89. Critical query if >180 (hypertensive crisis) or <80 (severe hypotension).
+- **Pulse Rate Bounds:** Normal 60–100 bpm. Major query if 101–120 or 50–59. Critical query if >120 (tachycardia) or <50 (bradycardia).
+- **Temperature Bounds:** Normal 36.0–37.5 °C. Major query if 37.6–38.5. Critical query if >38.5 (pyrexia) or <35.0 (hypothermia).
+- **Prakriti Proportions:** Verifies that Vata + Pitta + Kapha sum to 100% (tolerance ±1%).
 - **SAE Escalation:** Generates Critical query requiring documented 24-hour expedited pharmacovigilance review (NDCT Rules 2019).
 
 ### 5. Queries Module & Re-Validation Gate
@@ -172,7 +172,7 @@ When a patient record is created, edited, or batch-imported from Excel, the rule
 
 ---
 
-## ?? Security & Compliance Posture
+## 🔒 Security & Compliance Posture
 
 - **Password Hashing:** Passwords hashed with `bcryptjs` using 10 salt rounds.
 - **Session Authentication:** Cryptographically signed JWT tokens with 7-day expiration.
@@ -182,5 +182,5 @@ When a patient record is created, edited, or batch-imported from Excel, the rule
 
 ---
 
-## ?? License
+## 📄 License
 Developed for academic and clinical research at the All India Institute of Ayurveda (AIIA).

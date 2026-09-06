@@ -28,7 +28,7 @@
         <input type="text" id="loginUsername" required autocomplete="username" placeholder="e.g. admin or pi_vaidya">
       </label>
       <label>Password
-        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="        ">
+        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
       </label>
       <button type="submit" class="btn-primary" style="justify-content:center; margin-top:8px;">Log in to CTMS</button>
       <p class="auth-error" id="loginError"></p>
@@ -59,7 +59,7 @@
       </label>
       <label>Clinical Role
         <select id="signupRole" required>
-          <option value="">Select institutional role </option>
+          <option value="">Select institutional role</option>
           <option>Principal Investigator</option>
           <option>Clinical Research Coordinator</option>
           <option>Data Manager</option>
@@ -77,9 +77,7 @@
 <!-- ===================== APP SHELL ===================== -->
 <div id="appView" class="app-shell hidden">
   <aside class="app-sidebar">
-    <div class="sidebar-seal" title="All India Institute of Ayurveda">
-  <img src="logo.png" alt="Logo" class="sidebar-logo-img">
-</div>
+    <div class="sidebar-seal" title="All India Institute of Ayurveda">?</div>
     <nav class="sidebar-nav">
       <button class="sidebar-btn active" data-view="dashboard" title="Dashboard">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
@@ -160,26 +158,29 @@
 
         <div id="onboardingChecklist"></div>
 
+        <!-- Role-Specific KPI Focus: each clinical role sees the numbers most relevant to their job -->
+        <div id="roleFocusBanner" class="role-focus-banner"></div>
+
         <!-- Metric Stat Cards -->
         <div class="stat-grid">
           <div class="stat-card">
             <span class="stat-label">Enrolled Patients</span>
-            <span class="stat-value" id="statTotal"> </span>
-            <span class="stat-hint" id="statCleanCount">  Clean records</span>
+            <span class="stat-value" id="statTotal">•</span>
+            <span class="stat-hint" id="statCleanCount">• Clean records</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Resolved Queries</span>
-            <span class="stat-value" id="statResolved" style="color:var(--good);"> </span>
+            <span class="stat-value" id="statResolved" style="color:var(--good);">•</span>
             <span class="stat-hint">Audited resolutions</span>
           </div>
           <div class="stat-card stat-warn">
             <span class="stat-label">Open Data Queries</span>
-            <span class="stat-value" id="statOpen"> </span>
+            <span class="stat-value" id="statOpen">•</span>
             <span class="stat-hint" id="statQueryRate">0.00 / patient</span>
           </div>
           <div class="stat-card stat-critical">
             <span class="stat-label">Critical Alerts</span>
-            <span class="stat-value" id="statCritical"> </span>
+            <span class="stat-value" id="statCritical">•</span>
             <span class="stat-hint" id="statDevCount">0 deviations open</span>
           </div>
         </div>
@@ -191,7 +192,7 @@
             <svg width="130" height="130" viewBox="0 0 120 120">
               <circle cx="60" cy="60" r="48" fill="none" style="stroke: var(--accent-deep)" stroke-width="14"/>
               <circle id="qualityRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" stroke-dashoffset="0" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--saffron)"/>
-              <text x="60" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="28" font-weight="700" style="fill: var(--accent-ink-on)" id="qualityScoreText"> </text>
+              <text x="60" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="28" font-weight="700" style="fill: var(--accent-ink-on)" id="qualityScoreText">•</text>
               <text x="60" y="75" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--accent-ink-on); opacity: 0.7">out of 100</text>
             </svg>
             <div class="quality-status-line" id="qualityRatingText">Calculating quality...</div>
@@ -203,12 +204,12 @@
               <circle cx="60" cy="60" r="48" fill="none" style="stroke: var(--surface-2)" stroke-width="14"/>
               <circle id="cleanRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--good)"/>
               <circle id="flaggedRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--critical)"/>
-              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="cleanPctText"> </text>
+              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="cleanPctText">•</text>
               <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--ink-soft)">clean patients</text>
             </svg>
             <div class="donut-legend">
-              <span style="color:var(--good)">? Clean (<span id="legendClean"></span>)</span>
-              <span style="color:var(--critical)">? Flagged (<span id="legendFlagged"></span>)</span>
+              <span style="color:var(--good)">● Clean (<span id="legendClean"></span>)</span>
+              <span style="color:var(--critical)">● Flagged (<span id="legendFlagged"></span>)</span>
             </div>
           </div>
 
@@ -219,13 +220,13 @@
               <circle id="critRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--critical)"/>
               <circle id="majorRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--major)"/>
               <circle id="minorRing" cx="60" cy="60" r="48" fill="none" stroke-width="14" stroke-dasharray="0 301.6" transform="rotate(-90 60 60)" style="transition: stroke-dasharray 0.7s ease; stroke: var(--minor)"/>
-              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="severityTotalText"> </text>
+              <text x="60" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="26" font-weight="600" style="fill: var(--ink)" id="severityTotalText">•</text>
               <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" style="fill: var(--ink-soft)">open queries</text>
             </svg>
             <div class="donut-legend">
-              <span style="color:var(--critical)">? Critical (<span id="legendCritical"></span>)</span>
-              <span style="color:var(--major)">? Major (<span id="legendMajor"></span>)</span>
-              <span style="color:var(--minor)">? Minor (<span id="legendMinor"></span>)</span>
+              <span style="color:var(--critical)">● Critical (<span id="legendCritical"></span>)</span>
+              <span style="color:var(--major)">● Major (<span id="legendMajor"></span>)</span>
+              <span style="color:var(--minor)">● Minor (<span id="legendMinor"></span>)</span>
             </div>
           </div>
         </div>
