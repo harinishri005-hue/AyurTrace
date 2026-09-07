@@ -216,7 +216,7 @@ function maybeShowWelcomeModal(user) {
   const key = 'ctms_welcome_seen_' + user.username;
   if (localStorage.getItem(key)) return;
   localStorage.setItem(key, '1');
-  openModal('<h3>Welcome to AIIA Clinical Trials Dashboard ??</h3><p style="font-size:13.5px; color:var(--ink-soft); line-height:1.6;">You are logged in as <strong>' + escapeHtml(user.display_name) + '</strong> (<em>' + escapeHtml(user.role) + '</em>).</p><p style="font-size:13px; color:var(--ink-soft); line-height:1.5;">This CTMS platform is designed for institutional Ayurveda clinical trials, offering automated edit-checks, GCP pharmacovigilance tracking, protocol deviations oversight, and FHIR / CDISC interoperability.</p><div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Explore Dashboard</button></div>');
+  openModal('<h3>Welcome to AyurTrace 👋</h3><p style="font-size:13.5px; color:var(--ink-soft); line-height:1.6;">You are logged in as <strong>' + escapeHtml(user.display_name) + '</strong> (<em>' + escapeHtml(user.role) + '</em>).</p><p style="font-size:13px; color:var(--ink-soft); line-height:1.5;">This CTMS platform is designed for institutional Ayurveda clinical trials, offering automated edit-checks, GCP pharmacovigilance tracking, protocol deviations oversight, and FHIR / CDISC interoperability.</p><div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Explore Dashboard</button></div>');
 }
 
 document.querySelectorAll('.sidebar-btn').forEach(btn => {
