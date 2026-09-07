@@ -1,4 +1,4 @@
-// server/index.js - AIIA Clinical Trials Dashboard Server Entry Point
+// server/index.js - AyurTrace Server Entry Point
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -30,7 +30,7 @@ app.use('/api/auth/signup', authLimiter);
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
-    system: 'AIIA Clinical Trials Dashboard',
+    system: 'AyurTrace',
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
@@ -59,7 +59,7 @@ const PORT = config.port;
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`=======================================================`);
-    console.log(`  AIIA Clinical Trials Dashboard (Ayurveda CTMS)`);
+    console.log(`  AyurTrace (Ayurveda CTMS)`);
     console.log(`  Running on: http://localhost:${PORT}`);
     console.log(`=======================================================`);
   });
