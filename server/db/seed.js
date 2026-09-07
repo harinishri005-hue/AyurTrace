@@ -5,7 +5,7 @@ const config = require('../config');
 const { runEditChecksForPatient } = require('../services/editCheckEngine');
 
 async function seed() {
-  console.log('Seeding AIIA Clinical Trials Dashboard database...');
+  console.log('Seeding AyurTrace database...');
 
   // Disable foreign keys temporarily during table flush and reset sequence
   db.pragma('foreign_keys = OFF');
@@ -246,7 +246,7 @@ async function seed() {
   `);
 
   const auditLogs = [
-    { uid: 1, name: 'Dr. Tanuja Nesari', action: 'SYSTEM_INITIALIZED', details: 'AIIA Clinical Trials Dashboard initialized for GCP trials tracking', offset: '-60 days' },
+    { uid: 1, name: 'Dr. Tanuja Nesari', action: 'SYSTEM_INITIALIZED', details: 'AyurTrace initialized for GCP trials tracking', offset: '-60 days' },
     { uid: 2, name: 'Prof. Vaidya K. S. Dhiman', action: 'TRIAL_CREATED', details: 'Registered trial: AIIA-CURC-2024-02 (Curcumin & Boswellia in Knee Osteoarthritis)', offset: '-59 days' },
     { uid: 6, name: 'Dr. R. K. Manchanda', action: 'TRIAL_ETHICS_STATUS_UPDATED', details: 'Trial AIIA-CURC-2024-02 ethics approval granted under IEC/AIIA/2024/44', offset: '-58 days' },
     { uid: 2, name: 'Prof. Vaidya K. S. Dhiman', action: 'TRIAL_CREATED', details: 'Registered trial: AIIA-ASHWA-2025-01 (Ashwagandha in Generalized Anxiety)', offset: '-45 days' },
