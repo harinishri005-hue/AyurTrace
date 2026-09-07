@@ -335,7 +335,7 @@ function exportToCDISCODM(studyData, patientList) {
   <Study OID="${studyOID}">
     <GlobalVariables>
       <StudyName>${studyName}</StudyName>
-      <StudyDescription>Ayurveda GCP-aligned clinical trial managed via AIIA CTMS</StudyDescription>
+      <StudyDescription>Ayurveda GCP-aligned clinical trial managed via AyurTrace</StudyDescription>
       <ProtocolName>${studyData ? escapeXml(studyData.study_id) : 'AIIA-PROTOCOL'}</ProtocolName>
     </GlobalVariables>
     <MetaDataVersion OID="MDV.001" Name="AIIA Clinical Data Model v1">
