@@ -1,4 +1,4 @@
--- AIIA Clinical Trials Dashboard Database Schema (SQLite / Postgres-compatible)
+-- AyurTrace Database Schema (SQLite / Postgres-compatible)
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS users (
