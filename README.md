@@ -1,4 +1,4 @@
-# AIIA Clinical Trials Dashboard (Ayurveda CTMS)
+# AyurTrace (Ayurveda CTMS)
 
 > **Institutional Clinical Trial Management System (CTMS) for the All India Institute of Ayurveda (AIIA), New Delhi**  
 > *GCP-compliant, NDCT Rules 2019-aligned, pharmacovigilance-ready clinical research platform with automated edit-checks, Ayurvedic Nidana Panchaka intake, protocol deviations tracking, and interoperability exports (HL7 FHIR R4 & CDISC ODM-XML).*
